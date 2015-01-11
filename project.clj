@@ -6,4 +6,5 @@
   :dependencies [[org.clojure/clojure "1.5.1"]
                  [org.clojure/data.zip "0.1.1"]
                  [clj-http "1.0.1"]
-                 [clj-time "0.9.0"]])
+                 [clj-time "0.9.0"]
+                 [clojure-opennlp "0.3.3"]])

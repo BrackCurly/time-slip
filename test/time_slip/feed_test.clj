@@ -3,9 +3,7 @@
             [clj-time.core :as time]
             [time-slip.feed :refer :all]))
 
-
-
-(deftest parse-rss
+(deftest parse-test
   (testing "parse xml file"
     (let [items (-> "test/rss2sample.xml" slurp parse)]
       (is (= (count items) 4))
