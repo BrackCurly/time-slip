@@ -12,10 +12,10 @@
 (defn- strip-tags [s]
   (string/replace s #"(<.*?>)|((&lt|&LT|&#x0003C;|&#60;);.*?(&gt;|&GT;|&#x0003E;|&#62;))" ""))
 
-(def formatter (format/formatter "EEE, dd MMM yyyy HH:mm:ss Z"))
+(def formatter (format/formatters :rfc822))
 
-(defn- parse-date [s]
-  (format/parse formatter s))
+(defn parse-date [s]
+     (format/parse formatter (string/replace s #"GMT" "+0100")))
 
 (defn- item-field [item field]
   (zip-xml/xml1-> item field zip-xml/text))
