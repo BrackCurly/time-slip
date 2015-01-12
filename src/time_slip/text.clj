@@ -1,5 +1,6 @@
 (ns time-slip.text
-  (:require [opennlp.nlp :as nlp]))
+  (:require [opennlp.nlp :as nlp]
+            [clojure.string :as str]))
 
 (def tokenize (nlp/make-tokenizer "models/de-token.bin"))
 (def pos-tag (nlp/make-pos-tagger "models/de-pos-maxent.bin"))
@@ -36,8 +37,19 @@
                          [word]
                          (take-while noun? tail))
              seqs (concat seqs [seq])]
-         #_(println seq head tail)
          (if (not (next tail))
            seqs
            (recur  noun seqs (split-by #(noun=word? noun %) tail))))
        seqs)))
+
+(defn- freq-map [xs]
+  (-> xs
+      frequencies
+      (into (sorted-map))))
+
+(defn most-significant-noun [words]
+  (let [[[noun _] noun-n] (->> words (filter noun?) freq-map first)
+        [word-seq seq-n] (->> words (noun-seqs noun) freq-map first)]
+    (if (> seq-n (- noun-n seq-n))
+      (str/join " " (map first word-seq))
+      noun)))
