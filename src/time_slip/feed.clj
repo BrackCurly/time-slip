@@ -21,11 +21,8 @@
   (zip-xml/xml1-> item field zip-xml/text))
 
 (defn- get-item [item]
-  (let [title (item-field item :title)
-        description (item-field item :description)
-        date (item-field item :pubDate)]
-    {:text (strip-tags (str title " " description))
-     :date (parse-date date)}))
+  {:title (item-field item :title)
+   :date (parse-date (item-field item :pubDate))})
 
 (defn parse [data]
   (let [root (-> data parse-str zip/xml-zip)
