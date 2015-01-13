@@ -10,23 +10,21 @@
 
 
 (deftest noun-seqs-test
-  (let [words (get-words "Peter Müller mag Frau Sahra Müller und Angie.")]
-    (testing "noun at start of sequence"
-      (is (= (noun-seqs "Peter" words)
-             (list [["Peter" :noun]  ["Müller" :noun]]))))
-    (testing "noun in the middle of sequence"
-      (is (= (noun-seqs "Sahra" words)
-             (list [["Frau" :noun] ["Sahra" :noun] ["Müller" :noun]]))))
-    (testing "noun at the end of sequence"
-      (is (= (noun-seqs "Müller" words)
-             (list
-              [["Peter" :noun] ["Müller" :noun]]
-              [["Frau" :noun] ["Sahra" :noun] ["Müller" :noun]]))))))
+  (let [headline (get-words " \"Zentraler Kampfbegriff\" - \"Lügenpresse\" ist Unwort des Jahres")
+        punctuation (get-words "Nächster \"Charlie Hebdo\" wieder mit Mohammed-Karikaturen")]
+    (testing
+        (is (= (noun-seqs headline)
+               (list '(["Zentraler" :noun] ["Kampfbegriff" :noun] ["Lügenpresse" :noun])
+                     '(["Unwort" :noun])
+                     '(["Jahres" :noun])))))))
 
-(deftest most-significant-noun-test
-  (let [words-single (get-words "Das Schicksal ist im Spiel. Unser Schicksal tragen wir.")
-        words-group (get-words "Angela Merkel ist Bundeskanzlerin. Angela Merkel ist eine Frau.")]
-        (testing "most significant noun is single word"
-          (is (= (most-significant-noun words-single) "Das Schicksal")))
-        (testing "most significant noun is group of words"
-          (is (= (most-significant-noun words-group) "Angela Merkel")))))
+(deftest noun-sub-seqs-test
+  (testing
+      (let [words (get-words "Nächster \"Charlie Hebdo\" wieder mit Mohammed-Karikaturen")]
+        (is (= (noun-sub-seqs words)
+               (list '(["Nächster" :noun]) '(["Charlie" :noun]) '(["Hebdo" :noun])
+                     '(["Nächster" :noun] ["Charlie" :noun])
+                     '(["Charlie" :noun] ["Hebdo" :noun])
+                     '(["Nächster" :noun] ["Charlie" :noun] ["Hebdo" :noun])
+                     '(["Mohammed" :noun]) '(["Karikaturen" :noun])
+                     '(["Mohammed" :noun] ["-" :punctuation] ["Karikaturen" :noun])))))))

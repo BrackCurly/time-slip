@@ -1,13 +1,13 @@
 (ns time-slip.text
   (:require [clojure.string :as str]))
 
-(def punctuation-tokens #{"." "-" "„" "“" "’" "'" "\"" "/"})
+(def punctuation-tokens #{"." "-" "’" "'" "\""})
 
 ;; match ignored characters or hyphen between spaces
-(def ignore-regex  #"[:,;!?+]|((?<=\s)-(?=\s))")
+(def ignore-regex  #"[:,;!?+„“\"]|((?<=\s)-(?=\s))")
 
 ;; match before or after punctuation char or multiple whitespaces
-(def split-regex  #"(?<=[.\-„“\"’'/])|(?=[.\-„“\"’'/])|\s{1,}")
+(def split-regex  #"(?<=[.\-’'/])|(?=[.\-’'/])|\s{1,}")
 
 (defn- punctuation-token? [token]
   (contains? punctuation-tokens token))
@@ -51,29 +51,36 @@
 (defn- stop? [[_ type]]
   (= type :stop))
 
+(defn- punctuation? [[_ type]]
+  (= type :punctuation))
+
 (defn noun-seqs
-  "returns all sequences of nouns containing the token.
-   Seqence may contain punctuation tokens"
-  ([token words] (noun-seqs token [] (split-by #(= (first %) token) words)))
-  ([token seqs [head [word & tail]]]
-     (if (= token (first word))
-       (let [seq (concat (take-last-while #(not (stop? %)) head)
-                         [word]
-                         (take-while #(not (stop? %)) tail))
-             seqs (concat seqs [seq])]
+  "returns all sequences of nouns.
+  Seqences may contain punctuation tokens"
+  ([words] (noun-seqs [] (split-by #(not (stop? %)) words)))
+  ([seqs [head [word & tail]]]
+     (if (not (stop? word))
+       (let [seq-head (take-last-while #(not (stop? %)) head)
+             seq-tail (take-while #(not (stop? %)) tail)
+             seq (concat seq-head [word] seq-tail)
+             seqs (concat seqs [seq])
+             tail (drop (count seq-tail) tail)]
          (if (not (next tail))
            seqs
-           (recur token seqs (split-by #(= (first %) token) tail))))
+           (recur seqs (split-by #(not (stop? %)) tail))))
        seqs)))
 
-(defn- freq-map [xs]
-  (-> xs
-      frequencies
-      (into (sorted-map))))
+(defn- sub-seqs [seq]
+  (->> (for [n (range 1 (inc (count seq)))]
+         (partition n 1 seq))
+       (apply concat)))
 
-(defn most-significant-noun [words]
-  (let [[[noun _] noun-n] (->> words (filter noun?) freq-map first)
-        [word-seq seq-n] (->> words (noun-seqs noun) freq-map first)]
-    (if (> seq-n (- noun-n seq-n))
-      (str/join " " (map first word-seq))
-      noun)))
+(defn- noun-seq? [word-seq]
+  (and (-> word-seq first punctuation? not)
+       (-> word-seq last punctuation? not)))
+
+(defn noun-sub-seqs [words]
+  (->> words
+      noun-seqs
+      (mapcat sub-seqs)
+      (filter noun-seq?)))
