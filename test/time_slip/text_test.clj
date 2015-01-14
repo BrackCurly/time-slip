@@ -22,9 +22,9 @@
   (testing
       (let [words (get-words "Nächster \"Charlie Hebdo\" wieder mit Mohammed-Karikaturen")]
         (is (= (noun-sub-seqs words)
-               (list '(["Nächster" :noun]) '(["Charlie" :noun]) '(["Hebdo" :noun])
-                     '(["Nächster" :noun] ["Charlie" :noun])
-                     '(["Charlie" :noun] ["Hebdo" :noun])
-                     '(["Nächster" :noun] ["Charlie" :noun] ["Hebdo" :noun])
-                     '(["Mohammed" :noun]) '(["Karikaturen" :noun])
-                     '(["Mohammed" :noun] ["-" :punctuation] ["Karikaturen" :noun])))))))
+               (list "Nächster" "Charlie" "Hebdo"
+                     "Nächster Charlie"
+                     "Charlie Hebdo"
+                     "Nächster Charlie Hebdo"
+                     "Mohammed" "Karikaturen"
+                     "Mohammed - Karikaturen"))))))

@@ -59,7 +59,7 @@
   Seqences may contain punctuation tokens"
   ([words] (noun-seqs [] (split-by #(not (stop? %)) words)))
   ([seqs [head [word & tail]]]
-     (if (not (stop? word))
+     (if (and (not (nil? word)) (not (stop? word)))
        (let [seq-head (take-last-while #(not (stop? %)) head)
              seq-tail (take-while #(not (stop? %)) tail)
              seq (concat seq-head [word] seq-tail)
@@ -79,8 +79,12 @@
   (and (-> word-seq first punctuation? not)
        (-> word-seq last punctuation? not)))
 
+(defn- detokenize [words]
+  (str/join " " (map first words)))
+
 (defn noun-sub-seqs [words]
   (->> words
       noun-seqs
       (mapcat sub-seqs)
-      (filter noun-seq?)))
+      (filter noun-seq?)
+      (map detokenize)))
