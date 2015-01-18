@@ -10,7 +10,7 @@
             "http://www.faz.net/rss/aktuell/"
             "http://newsfeed.zeit.de/news/index"])
 
-(def today  (t/local-date 2014 1 1) #_(t/today-at 0 0))
+(def today (t/today-at 0 0))
 (def today-timestamp (coerce/to-long start-date))
 
 (defn parse-res [res]
