@@ -4,14 +4,15 @@
             [clj-time.predicates :as pr]
             [clj-time.coerce :as coerce]
             [time-slip.text :as txt]
-            [time-slip.feed :as f]))
+            [time-slip.feed :as f])
+  (:gen-class))
 
 (def feeds ["http://www.tagesschau.de/xml/rss2"
             "http://www.faz.net/rss/aktuell/"
             "http://newsfeed.zeit.de/news/index"])
 
 (def today (t/today-at 0 0))
-(def today-timestamp (coerce/to-long start-date))
+(def today-timestamp (coerce/to-long today))
 
 (defn parse-res [res]
   (-> res :body f/parse))
@@ -71,7 +72,7 @@
   (and (= (t/day date) 1)
        (= (t/month date) 1)))
 
-(defn main []
+(defn -main [& args]
   (if (pr/first-day-of-month? today)
     (println (month-str (t/month today))))
   (println (day-str (t/day today) (fetch-most-freq-noun))))

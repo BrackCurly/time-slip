@@ -7,4 +7,6 @@
                  [org.clojure/data.zip "0.1.1"]
                  [clj-http "1.0.1"]
                  [clj-time "0.9.0"]
-                 [clojure-opennlp "0.3.3"]])
+                 [clojure-opennlp "0.3.3"]]
+  :aot [time-slip.core]
+  :main time-slip.core)
