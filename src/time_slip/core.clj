@@ -14,16 +14,17 @@
 (defn parse-res [res]
   (-> res :body f/parse))
 
+
 (defn nouns-freq [s]
   (->> s
        txt/get-words
        txt/noun-sub-seqs
        frequencies))
 
-(defn freq-super [[s n] nouns-freq]
-  (->> nouns-freq
-       (take-while #(>= (/ (second %) 2) n))
-       (some #(re-matches (re-pattern s) (first %)))))
+(defn noun-seq-freq [[s n] nouns-freq]
+  (->> (drop 1 nouns-freq)
+       (take-while (fn [[_ n]] (> n 1)))
+       (filter (fn[[s-super _]] (.contains s-super s)))))
 
 (defn main []
   (let [nouns-freq (->> feeds
@@ -35,10 +36,12 @@
                         (apply merge-with +)
                         (sort-by second)
                         reverse)
-        most-freq (first nouns-freq)
-        most-freq-super (freq-super most-freq nouns-freq)]
-
-
-  (first (if (nil? most-freq-super)
-    most-freq
-    most-freq-super))))
+        noun (first nouns-freq)
+        noun-seq (first (noun-seq-freq noun nouns-freq))]
+    (if (nil? noun)
+      ""
+      (if (nil? noun-seq)
+      (first noun)
+      (if (> (/ (second noun) 2) (second noun-seq))
+        (first noun)
+        (first noun-seq))))))
