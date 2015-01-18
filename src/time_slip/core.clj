@@ -14,7 +14,6 @@
 (defn parse-res [res]
   (-> res :body f/parse))
 
-
 (defn nouns-freq [s]
   (->> s
        txt/get-words
@@ -24,13 +23,14 @@
 (defn noun-seq-freq [[s n] nouns-freq]
   (->> (drop 1 nouns-freq)
        (take-while (fn [[_ n]] (> n 1)))
-       (filter (fn[[s-super _]] (.contains s-super s)))))
+       (filter (fn[[s-seq _]] (.contains s-seq s)))))
 
 (defn main []
   (let [nouns-freq (->> feeds
                         (map client/get)
                         (filter #(= (:status %) 200))
                         (mapcat parse-res)
+                        (filter #(> (:timestamp %) start-date))
                         (map :title)
                         (map nouns-freq)
                         (apply merge-with +)
