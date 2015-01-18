@@ -1,6 +1,12 @@
 (ns time-slip.text
   (:require [clojure.string :as str]))
 
+(def stop-tokens #{"der" "die" "das" "in" "und" "sind" "ist" "ein" "zu" "von" "haben" "werden" "mit"
+                  "an" "auf" "sich" "für" "nicht" "es" "sie" "er" "auch" "als" "bei" "dies" "dass"
+                  "können" "aus" "eine" "ich" "nach" "wie" "ihr" "um" "aber" "so" "nur" "noch" "Jahr"
+                  "über" "wir" "viel" "man" "oder" "vor" "müssen" "all" "sollen" "kein" "bis" "sagt"
+                  "sagen" "wollen" "will"})
+
 (def punctuation-tokens #{"." "-" "’" "'" "\""})
 
 ;; match ignored characters or hyphen between spaces
@@ -13,7 +19,10 @@
   (contains? punctuation-tokens token))
 
 (defn- stop-token? [token]
-  (= token (str/lower-case token)))
+  (let [lower-token (str/lower-case token)]
+    (or (= token lower-token)
+        (contains? stop-tokens lower-token))))
+
 
 (defn- token-type [token]
   (cond

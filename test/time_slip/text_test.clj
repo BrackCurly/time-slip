@@ -4,8 +4,8 @@
 
 (deftest get-words-test
     (testing "split string into words stop-words and seperators"
-      (is (= (get-words "Taucher bergen Stimmenrekorder der AirAsia-Maschine")
-             '(["Taucher" :noun] ["bergen" :stop] ["Stimmenrekorder" :noun]
+      (is (= (get-words "Die Taucher bergen Stimmenrekorder der AirAsia-Maschine")
+             '(["Die" :stop] ["Taucher" :noun] ["bergen" :stop] ["Stimmenrekorder" :noun]
                ["der" :stop] ["AirAsia" :noun] ["-" :punctuation] ["Maschine" :noun])))))
 
 
