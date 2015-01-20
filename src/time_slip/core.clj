@@ -1,5 +1,6 @@
 (ns time-slip.core
-  (:require [clj-http.client :as client]
+  (:require [clojure.string :as str]
+            [clj-http.client :as client]
             [clj-time.core :as t]
             [clj-time.predicates :as pr]
             [clj-time.coerce :as coerce]
@@ -49,11 +50,21 @@
         (first noun)
         (first noun-seq))))))
 
+(defn replace-special-chars [str]
+  (-> str
+      (str/replace #"ü" "ue")
+      (str/replace #"Ü" "Ue")
+      (str/replace #"ä" "ae")
+      (str/replace #"Ä" "Ae")
+      (str/replace #"ö" "oe")
+      (str/replace #"Ö" "Oe")
+      (str/replace #"ß" "ss")))
+
 (defn month-str [month]
   (str "    " (case month
                 1 "JANUAR"
                 2 "FEBRUAR"
-                3 "MÄRZ"
+                3 "MAERZ"
                 4 "APRIL"
                 5 "MAI"
                 6 "JUNI"
@@ -68,11 +79,7 @@
   (str (if (< day 10) " " "")
        day ". " (subs word 0 (min 20 (count word)))))
 
-(defn first-day-of-year [date]
-  (and (= (t/day date) 1)
-       (= (t/month date) 1)))
-
 (defn -main [& args]
   (if (pr/first-day-of-month? today)
     (println (month-str (t/month today))))
-  (println (day-str (t/day today) (fetch-most-freq-noun))))
+  (println (day-str (t/day today) (replace-special-chars (fetch-most-freq-noun)))))
